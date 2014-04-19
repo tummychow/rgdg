@@ -8,7 +8,7 @@ def print_gem_deps(gemspec, dev, split)
     print "    \"#{gemspec.name}\""
     print "-#{gemspec.version}" if split
     print " -> "
-    print "\"#{gemdep.name}\""
+    print "\"#{gemdep.name}\";"
     puts
   end
 end
