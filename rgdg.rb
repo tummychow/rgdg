@@ -3,8 +3,6 @@
 require 'rubygems'
 require 'optparse'
 
-# Gem::Specification.find_all_by_name("jekyll", Gem::Requirement.new("~> 1.5.1")).each { |spec| p spec.dependencies }
-
 def print_gem_deps(gemspec, dev, split)
   gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || dev }.each do |gemdep|
     print "    \"#{gemspec.name}"
@@ -43,9 +41,10 @@ end.parse!
 
 puts 'digraph G {'
 
-Gem::Specification.each do |gemspec|
-#  puts "#{gemspec.name} version #{gemspec.version}"
-  print_gem_deps(gemspec, options[:dev], options[:splitver])
-end
+if options[:gemname].nil?
+  Gem::Specification
+else
+  Gem::Specification.find_all_by_name(options[:gemname], Gem::Requirement.new(options[:gemver].nil? ? ">= 0" : "= #{options[:gemver]}"))
+end.each { |gemspec| print_gem_deps(gemspec, options[:dev], options[:splitver]) }
 
 puts '}'
