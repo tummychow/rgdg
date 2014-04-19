@@ -4,12 +4,18 @@ require 'rubygems'
 require 'optparse'
 
 def print_gem_deps(gemspec, dev, split)
+  # print node for gem
+  print "    \"#{gemspec.name}"
+  print "-#{gemspec.version}" if split
+  puts '";'
+
+  # print dependency edges for gem
   gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || dev }.each do |gemdep|
-    print "    \"#{gemspec.name}\""
+    print "    \"#{gemspec.name}"
     print "-#{gemspec.version}" if split
-    print " -> "
-    print "\"#{gemdep.name}\";"
-    puts
+    print '" -> '
+    print "\"#{gemdep.name}\""
+    puts ';'
   end
 end
 
