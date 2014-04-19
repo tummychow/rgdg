@@ -21,19 +21,19 @@ Download the script and run it. That's all. rgdg is not (and will *never* be) in
 ```bash
 # dependencies of all gems
 # in further examples, the pipe to dot will be omitted
-$ rgdg | dot -Tpng -o output.png
+$ rgdg.rb | dot -Tpng -o output.png
 
 # dependencies of one gem
-$ rgdg -g jekyll
+$ rgdg.rb -g jekyll
 
 # dependencies of one version of one gem
-$ rgdg -g jekyll -v 1.5.0
+$ rgdg.rb -g jekyll -v 1.5.0
 
 # dev deps are excluded by default - let's enable them
-$ rgdg -D
+$ rgdg.rb -D
 
 # versions of the same gem are combined into one node by default - this will split them
-$ rgdg -V
+$ rgdg.rb -V
 ```
 
 ## Alternatives
