@@ -5,7 +5,7 @@ require 'optparse'
 
 def print_gem_deps(gemspec, dev, split)
   gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || dev }.each do |gemdep|
-    print "    \"#{gemspec.name}"
+    print "    \"#{gemspec.name}\""
     print "-#{gemspec.version}" if split
     print " -> "
     print "\"#{gemdep.name}\""
