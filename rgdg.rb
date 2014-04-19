@@ -11,11 +11,14 @@ def print_gem_deps(gemspec, dev, split)
 
   # print dependency edges for gem
   gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || dev }.each do |gemdep|
-    print "    \"#{gemspec.name}"
-    print "-#{gemspec.version}" if split
-    print '" -> '
-    print "\"#{gemdep.name}\""
-    puts ';'
+    Gem::Specification.find_all_by_name(gemdep.name, gemdep.requirements_list).each do |sgemdep|
+      print "    \"#{gemspec.name}"
+      print "-#{gemspec.version}" if split
+      print '" -> '
+      print "\"#{sgemdep.name}"
+      print "-#{sgemdep.version}" if split
+      puts '";'
+    end
   end
 end
 
