@@ -2,25 +2,7 @@
 
 require 'rubygems'
 require 'optparse'
-
-def print_gem_deps(gemspec, dev, split)
-  # print node for gem
-  print "    \"#{gemspec.name}"
-  print "-#{gemspec.version}" if split
-  puts '";'
-
-  # print dependency edges for gem
-  gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || dev }.each do |gemdep|
-    Gem::Specification.find_all_by_name(gemdep.name, gemdep.requirements_list).each do |sgemdep|
-      print "    \"#{gemspec.name}"
-      print "-#{gemspec.version}" if split
-      print '" -> '
-      print "\"#{sgemdep.name}"
-      print "-#{sgemdep.version}" if split
-      puts '";'
-    end
-  end
-end
+require 'set'
 
 
 
@@ -48,12 +30,48 @@ end.parse!
 
 
 
+nodes = Set.new
+edges = Set.new
+GemDepEdge = Struct.new(:depender, :dependee)
+
+node_queue =
+  if options[:gemname].nil?
+    Gem::Specification.to_a
+  else
+    Gem::Specification.find_all_by_name(options[:gemname], Gem::Requirement.new(options[:gemver].nil? ? ">= 0" : "= #{options[:gemver]}"))
+  end
+
+# breadth first search over dependency graph
+until node_queue.empty?
+  gemspec = node_queue.shift
+  unless nodes.include?(gemspec)
+    nodes << gemspec
+    gemspec.dependencies.select { |gemdep| gemdep.type == :runtime || options[:dev] }.each do |gemdep|
+      Gem::Specification.find_all_by_name(gemdep.name, gemdep.requirements_list).each do |depspec|
+        edges << GemDepEdge.new(gemspec, depspec)
+        node_queue << depspec
+      end
+    end
+  end
+end
+
+
+
 puts 'digraph G {'
 
-if options[:gemname].nil?
-  Gem::Specification
-else
-  Gem::Specification.find_all_by_name(options[:gemname], Gem::Requirement.new(options[:gemver].nil? ? ">= 0" : "= #{options[:gemver]}"))
-end.each { |gemspec| print_gem_deps(gemspec, options[:dev], options[:splitver]) }
+nodes.each do |node|
+  print "    \"#{node.name}"
+  print "-#{node.version}" if options[:splitver]
+  puts '";'
+end
+
+edges.each do |edge|
+  print "    \"#{edge.depender.name}"
+  print "-#{edge.depender.version}" if options[:splitver]
+  print '" -> '
+  print "\"#{edge.dependee.name}"
+  print "-#{edge.dependee.version}" if options[:splitver]
+  puts '";'
+end
 
 puts '}'
