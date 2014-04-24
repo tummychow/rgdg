@@ -44,6 +44,18 @@ rgdg is not the first (or the only) way to draw gem dependencies as a graph. Her
 - [bundler viz](http://bundler.io/v1.6/bundle_viz.html)
 - [an awk script](http://sharats.me/dependency-graph-of-all-installed-gems.html)
 
+## I have multiple edges between the same two gems!
+
+If you have multiple edges connecting the same pair of gems, that is not a bug. This behavior indicates that there are multiple versions of the parent gem, all of which are dependent on (various versions of) the child gem. Since there are multiple parents, it makes sense, in my opinion, for there to be multiple edges.
+
+For example, suppose I have two versions of yajl-ruby (1.1.0 and 1.2.0). Both these gems have a development dependency on the json gem (1.8.1). So if I invoke this command:
+
+```bash
+$ rgdg.rb -g yajl-ruby -D | dot -Tpng -o yajl.png
+```
+
+Then I will end up with a graph with two nodes (yajl-ruby and json), and there will be two edges pointing from yajl-ruby to json. This behavior is normal. You can split the versions by adding the `-V` flag, which will remove any parallel edges.
+
 ## License
 
 MIT.
