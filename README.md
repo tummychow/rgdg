@@ -36,6 +36,13 @@ $ rgdg.rb -D
 $ rgdg.rb -V
 ```
 
+If you're in a bundled environment, you can use rgdg there as well. rgdg doesn't have `require bundler/setup`, but it seems to work okay regardless. You could use this as an alternative to `bundler viz`.
+
+```bash
+# inside a bundle
+$ bundle exec path/to/rgdg.rb | dot -Tpng -o bundle.png
+```
+
 ## Alternatives
 
 rgdg is not the first (or the only) way to draw gem dependencies as a graph. Here are various other approaches to this problem.
